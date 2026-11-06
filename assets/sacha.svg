@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 540" role="img" aria-label="Ilustración de SACHA INCHI ACEITE">
+    <defs><linearGradient id="pack" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fffaf0"/><stop offset=".5" stop-color="#eee6d7"/><stop offset="1" stop-color="#fffdf6"/></linearGradient><linearGradient id="glass" x1="0" x2="1"><stop stop-color="#ffffff"/><stop offset=".45" stop-color="#7c9a68"/><stop offset="1" stop-color="#f8f3e9"/></linearGradient><radialGradient id="bg"><stop stop-color="#e8ead9"/><stop offset="1" stop-color="#f7f6ef"/></radialGradient></defs>
+    <rect width="500" height="540" fill="url(#bg)"/>
+    <circle cx="395" cy="109" r="95" fill="#7c9a68" opacity=".15"/><circle cx="75" cy="400" r="115" fill="#ffffff" opacity=".4"/>
+    <path d="M40 155 C73 102 100 75 145 57 C117 140 83 150 40 155Z" fill="#93a888" opacity=".2"/><path d="M374 447 C400 369 450 366 468 345 C471 416 442 450 374 447Z" fill="#97aa86" opacity=".22"/>
+    <ellipse cx="250" cy="455" rx="139" ry="18" fill="#6e6850" opacity=".12"/>
+    <rect x="219" y="138" width="62" height="43" rx="7" fill="#b9a67e"/><rect x="203" y="170" width="94" height="44" rx="17" fill="#d9c9a0"/><rect x="184" y="199" width="132" height="227" rx="29" fill="url(#glass)" stroke="#dad4c2"/><rect x="194" y="234" width="112" height="159" rx="6" fill="#e8ead9"/><text x="250" y="264" text-anchor="middle" fill="#415640" font-family="Arial, sans-serif" font-size="15" letter-spacing="4" font-weight="bold">ASIRI</text>
+    <path d="M244 245 q-9 -12 0 -20 q8 7 0 20 M250 244 q12 -13 20 -10 q-7 13 -20 10" fill="#8fa77f"/>
+    <path d="M216 282 H284" stroke="#aab99e" stroke-width="1"/>
+    <text x="250" y="315" text-anchor="middle" fill="#354e39" font-family="Georgia, serif" font-weight="bold" font-size="23">SACHA INCHI</text>
+    <text x="250" y="339" text-anchor="middle" fill="#576b51" font-family="Arial" letter-spacing="1" font-size="16">ACEITE</text>
+    <text x="250" y="376" text-anchor="middle" fill="#667561" font-family="Arial" font-size="15">250 ml</text></svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 690">
+<defs>
+  <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f1ebd9"/><stop offset="1" stop-color="#dce5cc"/></linearGradient>
+  <linearGradient id="pouch" x1="0" x2="1"><stop stop-color="#f8f6e9"/><stop offset="1" stop-color="#d8d6bf"/></linearGradient>
+  <linearGradient id="jar" x1="0" x2="1"><stop stop-color="#c0ad80"/><stop offset=".5" stop-color="#e4c16b"/><stop offset="1" stop-color="#b38744"/></linearGradient>
+  <filter id="shade"><feDropShadow dx="0" dy="18" stdDeviation="17" flood-color="#526044" flood-opacity=".17"/></filter>
+</defs>
+<rect width="720" height="690" rx="0" fill="url(#bg)"/>
+<circle cx="509" cy="227" r="174" fill="#faf5e6" opacity=".8"/>
+<circle cx="572" cy="158" r="69" fill="#f0c58e" opacity=".33"/>
+<g opacity=".78"><path d="M80 600 C-15 415 71 254 182 164" fill="none" stroke="#728e67" stroke-width="13"/>
+<path d="M125 292 C40 289 12 243 22 175 C94 195 124 236 125 292" fill="#7f9b71"/><path d="M147 246 C125 162 177 117 239 110 C232 186 197 235 147 246" fill="#92a885"/>
+<path d="M93 394 C19 389 -7 334 7 267 C76 282 102 328 93 394" fill="#9bae8b"/><path d="M105 428 C132 355 199 333 252 343 C221 415 173 448 105 428" fill="#849e73"/><path d="M101 518 C28 524 4 482 1 428 C71 441 98 472 101 518" fill="#819b73"/></g>
+<g transform="translate(521 283) rotate(12)" opacity=".8"><path d="M0 215 C-36 99 -5 26 62 -62" stroke="#5f8d5b" stroke-width="8" fill="none"/><path d="M28 72 C-36 62 -44 16 -34 -29 C16 -10 27 30 28 72" fill="#829f70"/><path d="M37 38 C32 -14 81 -47 123 -42 C107 7 76 35 37 38" fill="#729261"/><path d="M15 156 C-39 139 -59 100 -48 49 C0 66 23 111 15 156" fill="#9ab18b"/><path d="M35 118 C45 64 90 50 129 59 C107 112 82 127 35 118" fill="#829f70"/></g>
+<ellipse cx="370" cy="587" rx="250" ry="47" fill="#aab29c" opacity=".42"/>
+<g filter="url(#shade)"><path d="M231 222 L425 222 L444 544 Q437 568 413 568 L241 568 Q218 568 215 544 Z" fill="url(#pouch)" stroke="#ded8c5" stroke-width="3"/><path d="M233 222 H422 L425 263 H231 Z" fill="#9eac87"/><rect x="244" y="302" width="172" height="192" rx="7" fill="#ecebd9"/>
+<text x="331" y="355" font-size="24" text-anchor="middle" font-family="Georgia,serif" fill="#405944">ASIRI</text><path d="M320 332 q-9 -15 1 -24 q12 13 -1 24 M326 330 q16 -18 30 -11 q-11 17 -30 11" fill="#819b72"/>
+<line x1="272" x2="392" y1="377" y2="377" stroke="#b2bda1"/>
+<text x="331" y="425" font-size="26" text-anchor="middle" font-family="Georgia,serif" fill="#354b39">Maca</text><text x="331" y="455" font-size="17" letter-spacing="3" text-anchor="middle" font-family="Arial" fill="#647360">ANDINA</text><text x="331" y="484" font-size="13" text-anchor="middle" font-family="Arial" fill="#88917d">250 g</text></g>
+<g filter="url(#shade)"><rect x="414" y="340" width="164" height="34" rx="8" fill="#b69c6c"/><rect x="403" y="367" width="186" height="192" rx="29" fill="url(#jar)"/><rect x="419" y="397" width="153" height="135" rx="7" fill="#f5ecd6"/><text x="496" y="441" font-size="20" text-anchor="middle" font-family="Georgia" fill="#405944">ASIRI</text><line x1="447" x2="547" y1="455" y2="455" stroke="#c4b894"/><text x="496" y="489" font-size="24" text-anchor="middle" font-family="Georgia" fill="#65502b">Miel pura</text><text x="496" y="514" font-size="12" text-anchor="middle" font-family="Arial" fill="#8b754e">500 g</text></g>
+<g filter="url(#shade)"><path d="M126 400 L246 400 L251 568 L121 568 Z" fill="#e8eadc" stroke="#d0d5bf"/><path d="M126 400 H246 V432 H126 Z" fill="#91a57a"/><text x="186" y="462" font-size="14" text-anchor="middle" font-family="Georgia" fill="#4f674f">ASIRI</text><text x="186" y="493" font-size="18" text-anchor="middle" font-family="Georgia" fill="#405641">Infusión</text><text x="186" y="519" font-size="16" text-anchor="middle" font-family="Arial" fill="#55694f">botánica</text><path d="M150 546 Q186 505 222 546" fill="none" stroke="#91a57a" stroke-width="3"/></g>
+<g transform="translate(558 572)"><path d="M0 20 Q-22 -5 -5 -27 Q19 -7 0 20" fill="#6e9965"/><path d="M0 20 Q14 -20 42 -19 Q32 16 0 20" fill="#94ae7d"/><path d="M0 20 V50" stroke="#67875e" stroke-width="3"/></g>
+</svg>
