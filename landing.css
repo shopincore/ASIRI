@@ -1,0 +1,40 @@
+﻿/* ASIRI — portada editorial botánica. */
+:root{--cream:#f4efe3;--offwhite:#faf8f2;--ink:#3e4436;--line:#e6e1d5}
+body{font-family:Arial,"Helvetica Neue",sans-serif}
+.site-header{position:absolute;inset:0 0 auto;background:transparent;backdrop-filter:none;border:0;color:var(--cream)}
+.header-inner{width:calc(100% - 112px);max-width:1500px;height:106px;gap:36px}
+.site-header .logo{color:var(--cream);padding-right:38px;border-right:1px solid #eee5d65c}
+.site-header .logo-word{font:400 38px/1 Georgia,"Times New Roman",serif;letter-spacing:.19em}
+.nav{margin-left:12px;gap:34px;flex:1;justify-content:center}
+.nav a{color:var(--cream);font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.nav a span{margin-left:5px}.nav a:hover,.nav a:focus-visible{color:#fff}
+.header-actions{gap:20px}.site-header .icon-button{color:var(--cream)}
+.searchbar{width:38px;height:40px;padding:7px;border:0;border-radius:0;background:transparent;position:relative}
+.searchbar svg{color:var(--cream);width:25px;height:25px}.searchbar input,.search-submit{display:none}
+.searchbar:focus-within{width:210px;background:#f4efe3;padding:8px 12px;border-radius:2px}
+.searchbar:focus-within input{display:block;color:#3e4436}.searchbar:focus-within svg{color:#3e4436}
+.cart-count{background:#ddd1b7;color:#433b2c;top:0;right:-4px;font-size:9px;min-width:14px;height:14px}
+.hero{position:relative;isolation:isolate;min-height:840px;height:100svh;max-height:1150px;background:#665740;color:var(--cream);overflow:hidden}
+.hero-visual{position:absolute;inset:0;z-index:-2;margin:0;height:100%;width:100%;overflow:hidden}
+.hero-visual>img{width:100%;height:100%;min-height:0;object-fit:cover;object-position:center}
+.hero-visual:before{display:none}.hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(32,27,19,.48),rgba(32,27,19,.09) 63%,rgba(32,27,19,.13));pointer-events:none}
+.hero-grid{position:relative;display:block;width:calc(100% - 128px);max-width:1480px;min-height:0;height:100%;margin:auto}
+.hero-copy{padding:155px 0 100px;position:relative;max-width:660px}
+.hero-copy .eyebrow{font-size:10px;letter-spacing:.25em;font-weight:400;color:var(--cream);gap:13px;display:flex;align-items:center}
+.hero h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;color:var(--cream);letter-spacing:-.045em;line-height:.99;margin:24px 0 23px}
+.hero-brand{display:block;font-size:clamp(110px,12vw,182px);letter-spacing:.035em;line-height:.85;margin-left:-7px;margin-bottom:18px}
+.hero-tagline{display:block;font-size:clamp(48px,5.1vw,76px);font-weight:400}.hero h1 em{color:inherit;font-weight:400}
+.hero-copy>p{font-size:18px;line-height:1.4;color:var(--cream);font-weight:400;margin:0 0 30px;max-width:440px}
+.hero-actions .btn-primary{background:transparent;border:1px solid #eee7d9;border-radius:0;color:var(--cream);text-transform:uppercase;font-size:12px;letter-spacing:.17em;font-weight:400;padding:15px 24px;gap:26px;min-width:246px}
+.hero-actions .btn-primary span{font-size:25px;line-height:1}.hero-actions .btn-primary:hover{background:var(--cream);color:#493f30}
+.hero-manifesto{position:absolute;right:0;bottom:15%;width:230px}.manifesto-kicker{font-size:9px;letter-spacing:.2em;color:var(--cream)}
+.hero-manifesto h2{font:400 29px/1.2 Georgia,serif;letter-spacing:.065em;text-transform:uppercase;margin:25px 0}
+.hero-manifesto p{border-left:1px solid #efe8d78c;padding-left:25px;font-size:10px;line-height:1.9;letter-spacing:.23em;text-transform:uppercase;color:var(--cream)}
+.hero-scroll{position:absolute;left:58px;bottom:35px;width:46px;height:46px;display:grid;place-items:center;border:1px solid #f4efe3a3;border-radius:50%;font-size:28px;font-weight:300}.hero-bottom-note{position:absolute;right:60px;bottom:45px;font-size:9px;letter-spacing:.22em}
+@media(min-width:1500px){.hero-copy{padding-top:18vh}.hero-manifesto{bottom:18%}}
+@media(max-width:1100px){.header-inner{width:calc(100% - 64px);gap:18px}.site-header .logo{padding-right:20px}.nav{gap:19px;margin-left:0}.nav a{font-size:9px}.hero-grid{width:calc(100% - 80px)}.hero-manifesto{width:180px;bottom:12%}.hero-manifesto h2{font-size:25px}.hero-copy{max-width:600px}.hero-scroll{left:40px}.hero-brand{font-size:140px}}
+@media(max-width:830px){.header-inner{height:85px}.menu-trigger{display:grid;order:3}.site-header .logo{border:0;padding:0}.header-actions{margin-left:auto}.nav{display:none;top:84px;background:#403b30;padding:25px 32px;border:0}.nav.open{display:flex}.nav a{font-size:12px}.hero{min-height:830px}.hero-copy{padding-top:140px}.hero-manifesto{bottom:10%;width:180px}.hero-brand{font-size:135px}.hero-tagline{font-size:62px}}
+@media(max-width:600px){.header-inner{width:calc(100% - 36px);height:78px;gap:10px}.site-header .logo-word{font-size:29px}.header-actions{gap:8px}.nav{top:77px}.hero{height:100svh;min-height:790px;max-height:none}.hero-grid{width:calc(100% - 48px)}.hero-copy{padding:127px 0 0;max-width:100%}.hero-copy .eyebrow{font-size:7px;letter-spacing:.16em;gap:8px;white-space:nowrap}.hero h1{margin:24px 0}.hero-brand{font-size:98px;margin-left:-4px;margin-bottom:20px}.hero-tagline{font-size:48px;line-height:1.03}.hero-copy>p{font-size:15px;max-width:290px;line-height:1.5;margin-bottom:25px}.hero-actions .btn-primary{padding:12px 18px;font-size:10px;min-width:215px}.hero-visual>img{object-position:63% center}.hero:after{background:linear-gradient(90deg,rgba(28,25,18,.65),rgba(28,25,18,.14)),linear-gradient(0deg,rgba(28,25,18,.25),transparent 40%)}.hero-manifesto{right:0;bottom:55px;width:auto}.manifesto-kicker,.hero-manifesto p{display:none}.hero-manifesto h2{font-size:19px;line-height:1.3;margin:0;letter-spacing:.06em}.hero-scroll{left:24px;bottom:47px;width:40px;height:40px}.hero-bottom-note{display:none}.searchbar:focus-within,.searchbar.expanded{position:absolute;left:15px;right:95px;top:19px;width:auto;background:#f4efe3}.searchbar.expanded input{display:block;color:#3e4436}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-actions .btn{transition:none}}
+.search-toggle{display:grid;place-items:center;padding:0;border:0;background:transparent;color:inherit;flex:none}.searchbar.expanded{width:210px;background:var(--cream);padding:8px 12px}.searchbar.expanded input{display:block;color:var(--ink)}.searchbar.expanded svg{color:var(--ink)}
+@media(max-width:600px){.searchbar.expanded{width:auto}}

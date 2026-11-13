@@ -64,3 +64,19 @@ $$('#navigation a').forEach(a=>a.addEventListener('click',()=>{$('#navigation').
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();if(e.key==='Tab'&&activeDialog){const nodes=$$('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),summary',activeDialog).filter(n=>n.getClientRects().length);if(!nodes.length)return;const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
 $('#year').textContent=new Date().getFullYear();
 renderProducts();renderCart();
+
+// Keep search available in the minimal landing header.
+const searchToggle = document.querySelector('.search-toggle');
+searchToggle?.addEventListener('click', () => {
+  const form = document.querySelector('#headerSearch');
+  const open = form.classList.toggle('expanded');
+  searchToggle.setAttribute('aria-expanded', String(open));
+  if (open) document.querySelector('#searchInput').focus();
+});
+document.querySelector('#headerSearch').addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    event.currentTarget.classList.remove('expanded');
+    searchToggle.setAttribute('aria-expanded', 'false');
+    searchToggle.focus();
+  }
+});
