@@ -1,13 +1,13 @@
 /* ASIRI: frontend de demostración. Reemplaza datos en PRODUCTS y configura tu sistema de pedidos antes de publicar. */
 const PRODUCTS = [
-  {id:'maca',name:'Maca Andina',category:'Superalimentos',size:'Bolsa de 250 g',price:39.90,image:'assets/maca.svg',badge:'Selección natural',description:'Maca en presentación de 250 g, una opción práctica para sumar a tus preparaciones diarias.'},
-  {id:'miel',name:'Miel de abeja',category:'Aceites y mieles',size:'Frasco de 500 g',price:34.90,image:'assets/miel.svg',badge:'Favorito',description:'Miel de abeja en frasco de 500 g. Un toque dulce para bebidas, recetas y desayunos.'},
-  {id:'infusion',name:'Infusión botánica',category:'Infusiones',size:'Caja de 20 filtrantes',price:19.90,image:'assets/infusion.svg',badge:'Momento pausa',description:'Infusión de ejemplo en presentación de 20 filtrantes, ideal para disfrutar una pausa en tu rutina.'},
-  {id:'aceite',name:'Aceite de coco',category:'Aceites y mieles',size:'Frasco de 250 ml',price:28.90,image:'assets/aceite.svg',badge:'Versátil',description:'Aceite de coco en frasco de 250 ml para distintos usos, según las indicaciones del producto real.'},
-  {id:'cacao',name:'Cacao natural',category:'Superalimentos',size:'Bolsa de 250 g',price:27.90,image:'assets/cacao.svg',badge:'De la tierra',description:'Cacao natural en polvo de muestra, para bebidas y recetas con sabor intenso.'},
-  {id:'chia',name:'Semillas de chía',category:'Superalimentos',size:'Bolsa de 500 g',price:24.90,image:'assets/chia.svg',badge:'Básico natural',description:'Semillas de chía en bolsa de 500 g, para combinar con yogures, bebidas y preparaciones.'},
-  {id:'calendula',name:'Crema de caléndula',category:'Cuidado personal',size:'Envase de 120 ml',price:36.90,image:'assets/calendula.svg',badge:'Cuidado diario',description:'Crema cosmética de muestra con caléndula. Consulta siempre la etiqueta e ingredientes reales.'},
-  {id:'sacha',name:'Aceite de sacha inchi',category:'Aceites y mieles',size:'Botella de 250 ml',price:29.90,image:'assets/sacha.svg',badge:'Origen vegetal',description:'Aceite vegetal de muestra en presentación de 250 ml. Verifica características del producto real.'}
+  {id:'maca',name:'Maca Andina',category:'Superalimentos',size:'Bolsa de 250 g',price:39.90,image:'assets/maca.webp',badge:'Selección natural',description:'Maca en presentación de 250 g, una opción práctica para sumar a tus preparaciones diarias.'},
+  {id:'miel',name:'Miel de abeja',category:'Aceites y mieles',size:'Frasco de 500 g',price:34.90,image:'assets/miel.webp',badge:'Favorito',description:'Miel de abeja en frasco de 500 g. Un toque dulce para bebidas, recetas y desayunos.'},
+  {id:'infusion',name:'Infusión botánica',category:'Infusiones',size:'Caja de 20 filtrantes',price:19.90,image:'assets/infusion.webp',badge:'Momento pausa',description:'Infusión de ejemplo en presentación de 20 filtrantes, ideal para disfrutar una pausa en tu rutina.'},
+  {id:'aceite',name:'Aceite de coco',category:'Aceites y mieles',size:'Frasco de 250 ml',price:28.90,image:'assets/aceite.webp',badge:'Versátil',description:'Aceite de coco en frasco de 250 ml para distintos usos, según las indicaciones del producto real.'},
+  {id:'cacao',name:'Cacao natural',category:'Superalimentos',size:'Bolsa de 250 g',price:27.90,image:'assets/cacao.webp',badge:'De la tierra',description:'Cacao natural en polvo de muestra, para bebidas y recetas con sabor intenso.'},
+  {id:'chia',name:'Semillas de chía',category:'Superalimentos',size:'Bolsa de 500 g',price:24.90,image:'assets/chia.webp',badge:'Básico natural',description:'Semillas de chía en bolsa de 500 g, para combinar con yogures, bebidas y preparaciones.'},
+  {id:'calendula',name:'Crema de caléndula',category:'Cuidado personal',size:'Envase de 120 ml',price:36.90,image:'assets/calendula.webp',badge:'Cuidado diario',description:'Crema cosmética de muestra con caléndula. Consulta siempre la etiqueta e ingredientes reales.'},
+  {id:'sacha',name:'Aceite de sacha inchi',category:'Aceites y mieles',size:'Botella de 250 ml',price:29.90,image:'assets/sacha.webp',badge:'Origen vegetal',description:'Aceite vegetal de muestra en presentación de 250 ml. Verifica características del producto real.'}
 ];
 const $ = (q,root=document) => root.querySelector(q);
 const $$ = (q,root=document) => [...root.querySelectorAll(q)];
