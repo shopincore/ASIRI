@@ -14,6 +14,7 @@ const PUBLIC_PATH = /^\/(?:|index\.html|app\.js|motion\.js|styles\.css|landing\.
 const ORDER_STATUSES = ['nuevo', 'confirmado', 'pagado', 'enviado', 'entregado', 'cancelado'];
 const MAX_ITEMS = 30;
 const MAX_QTY = 99;
+const LOW_STOCK = 5; // desde aquí se muestra «Quedan N»
 
 export class HttpError extends Error {
   constructor(status, message, details) {
@@ -63,10 +64,12 @@ const int = (v, { field, min = 0, max = 1e9, nullable = false }) => {
 const toProduct = r => ({
   id: r.id, name: r.name, category: r.category, size: r.size,
   price: r.price_cents / 100, priceCents: r.price_cents,
+  compareAtPrice: r.compare_at_cents > r.price_cents ? r.compare_at_cents / 100 : null,
   image: r.image, badge: r.badge, description: r.description,
   inStock: r.stock === null || r.stock > 0,
+  stockLeft: r.stock !== null && r.stock > 0 && r.stock <= LOW_STOCK ? r.stock : null,
 });
-const toAdminProduct = r => ({ ...toProduct(r), stock: r.stock, active: r.active, sortOrder: r.sort_order, updatedAt: r.updated_at });
+const toAdminProduct = r => ({ ...toProduct(r), compareAtCents: r.compare_at_cents, stock: r.stock, active: r.active, sortOrder: r.sort_order, updatedAt: r.updated_at });
 const toOrder = (o, items) => ({
   code: o.code, status: o.status,
   customer: { name: o.customer_name, phone: o.customer_phone, email: o.customer_email },
@@ -74,6 +77,8 @@ const toOrder = (o, items) => ({
   notes: o.notes,
   items: items.map(i => ({ productId: i.product_id, name: i.name, size: i.size, unitPrice: i.unit_price_cents / 100, quantity: i.quantity, lineTotal: (i.unit_price_cents * i.quantity) / 100 })),
   subtotal: o.subtotal_cents / 100,
+  shipping: o.shipping_cents / 100,
+  total: (o.subtotal_cents + o.shipping_cents) / 100,
   createdAt: o.created_at, updatedAt: o.updated_at,
 });
 const soles = cents => 'S/ ' + (cents / 100).toFixed(2);
@@ -92,6 +97,8 @@ function whatsappLink(number, order) {
     `Hola ASIRI, acabo de hacer el pedido *${order.code}*:`,
     ...order.items.map(i => `• ${i.quantity} × ${i.name} (${i.size})`),
     `Subtotal: ${soles(Math.round(order.subtotal * 100))}`,
+    `Envío: ${order.shipping ? soles(Math.round(order.shipping * 100)) : 'gratis'}`,
+    `*Total: ${soles(Math.round(order.total * 100))}*`,
     order.delivery.method === 'delivery' ? `Entrega en: ${[order.delivery.address, order.delivery.district].filter(Boolean).join(', ')}` : 'Recojo en tienda',
     `A nombre de: ${order.customer.name}`,
   ];
@@ -112,7 +119,9 @@ function rateLimit({ windowMs, max }) {
 }
 
 export function createApp(db, config = {}) {
-  const { adminToken, whatsappNumber, allowedOrigins = [], rateLimitMax = 20 } = config;
+  const { adminToken, whatsappNumber, allowedOrigins = [], rateLimitMax = 20, shippingFeeCents = 1000, freeShippingFromCents = 12000 } = config;
+  // Envío: gratis desde cierto monto; recojo en tienda siempre gratis.
+  const shippingFor = (method, subtotal) => (method === 'recojo' || subtotal >= freeShippingFromCents ? 0 : shippingFeeCents);
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
@@ -139,7 +148,7 @@ export function createApp(db, config = {}) {
   }));
 
   app.get('/api/config', (_req, res) => {
-    res.json({ whatsapp: Boolean(whatsappNumber), currency: 'PEN', orderStatuses: ORDER_STATUSES });
+    res.json({ whatsapp: Boolean(whatsappNumber), currency: 'PEN', orderStatuses: ORDER_STATUSES, shippingFee: shippingFeeCents / 100, freeShippingFrom: freeShippingFromCents / 100 });
   });
 
   app.get('/api/products', wrap(async (req, res) => {
@@ -195,9 +204,9 @@ export function createApp(db, config = {}) {
 
       const subtotal = [...qty].reduce((sum, [id, n]) => sum + byId.get(id).price_cents * n, 0);
       const { rows: [o] } = await q(
-        `INSERT INTO orders (code, customer_name, customer_phone, customer_email, delivery_method, district, address, notes, subtotal_cents)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-        [orderCode(), customer.name, customer.phone, customer.email, delivery.method, delivery.district, delivery.address, notes, subtotal],
+        `INSERT INTO orders (code, customer_name, customer_phone, customer_email, delivery_method, district, address, notes, subtotal_cents, shipping_cents)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+        [orderCode(), customer.name, customer.phone, customer.email, delivery.method, delivery.district, delivery.address, notes, subtotal, shippingFor(delivery.method, subtotal)],
       );
       const items = [];
       for (const [id, n] of qty) {
@@ -250,6 +259,7 @@ export function createApp(db, config = {}) {
     category: ['category', v => str(v, { field: 'category', required: true, max: 60 })],
     size: ['size', v => str(v, { field: 'size', max: 80 }) ?? ''],
     priceCents: ['price_cents', v => int(v, { field: 'priceCents', min: 0, max: 10_000_000 })],
+    compareAtCents: ['compare_at_cents', v => int(v, { field: 'compareAtCents', min: 1, max: 10_000_000, nullable: true })],
     image: ['image', v => str(v, { field: 'image', max: 500 }) ?? ''],
     badge: ['badge', v => str(v, { field: 'badge', max: 40 }) ?? ''],
     description: ['description', v => str(v, { field: 'description', max: 2000 }) ?? ''],

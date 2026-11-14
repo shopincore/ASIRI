@@ -51,15 +51,13 @@ export async function createDb(url = process.env.DATABASE_URL) {
   return db;
 }
 
-/** Carga el catálogo inicial solo si la tabla de productos está vacía. */
+/** Agrega los productos del catálogo de muestra que aún no existen (no toca los existentes). */
 async function seed(db) {
-  const { rows } = await db.query('SELECT count(*)::int AS n FROM products');
-  if (rows[0].n > 0) return;
   for (const [i, p] of SEED_PRODUCTS.entries()) {
     await db.query(
-      `INSERT INTO products (id, name, category, size, price_cents, image, badge, description, sort_order)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [p.id, p.name, p.category, p.size, p.price_cents, p.image, p.badge, p.description, i],
+      `INSERT INTO products (id, name, category, size, price_cents, compare_at_cents, image, badge, description, stock, sort_order)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (id) DO NOTHING`,
+      [p.id, p.name, p.category, p.size, p.price_cents, p.compare_at_cents, p.image, p.badge, p.description, p.stock, i],
     );
   }
 }

@@ -58,3 +58,7 @@ CREATE TABLE IF NOT EXISTS messages (
   read       BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- v2: precio de referencia para ofertas y envío en pedidos.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS compare_at_cents INTEGER CHECK (compare_at_cents IS NULL OR compare_at_cents > 0);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_cents INTEGER NOT NULL DEFAULT 0;

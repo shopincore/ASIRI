@@ -7,6 +7,8 @@ const app = createApp(db, {
   adminToken: process.env.ADMIN_TOKEN,
   whatsappNumber: process.env.WHATSAPP_NUMBER,
   allowedOrigins: (process.env.ALLOWED_ORIGINS ?? 'https://shopincore.github.io').split(',').map(s => s.trim()).filter(Boolean),
+  shippingFeeCents: Math.round(Number(process.env.SHIPPING_FEE ?? 10) * 100),
+  freeShippingFromCents: Math.round(Number(process.env.FREE_SHIPPING_FROM ?? 120) * 100),
 });
 
 const server = app.listen(port, () => console.log(`ASIRI escuchando en http://localhost:${port}`));

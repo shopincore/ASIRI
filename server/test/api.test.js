@@ -32,9 +32,13 @@ const validOrder = (items = [{ productId: 'maca', quantity: 2 }, { productId: 'm
 test('health y catálogo inicial', async () => {
   assert.equal((await api('/api/health')).json.ok, true);
   const { json } = await api('/api/products');
-  assert.equal(json.products.length, 8);
-  assert.deepEqual(json.products[0], { id: 'maca', name: 'Maca Andina', category: 'Superalimentos', size: 'Bolsa de 250 g', price: 39.9, priceCents: 3990, image: 'assets/maca.webp', badge: 'Selección natural', description: json.products[0].description, inStock: true });
-  assert.equal((await api('/api/products?category=Infusiones')).json.products.length, 1);
+  assert.equal(json.products.length, 20);
+  const maca = json.products.find(p => p.id === 'maca');
+  assert.deepEqual(maca, { id: 'maca', name: 'Maca Andina', category: 'Superalimentos', size: 'Bolsa de 250 g', price: 39.9, priceCents: 3990, compareAtPrice: 45.9, image: 'assets/maca.webp', badge: 'Selección natural', description: maca.description, inStock: true, stockLeft: null });
+  assert.equal(json.products.find(p => p.id === 'sacha').stockLeft, 3);
+  assert.equal(json.products.find(p => p.id === 'maca-500').image, 'assets/maca.webp');
+  assert.equal((await api('/api/products?category=Packs%20ahorro')).json.products.length, 5);
+  assert.equal((await api('/api/products?category=Infusiones')).json.products.length, 2);
   assert.equal((await api('/api/products/nope')).status, 404);
 });
 
@@ -43,6 +47,8 @@ test('crear pedido calcula precios en el servidor y genera WhatsApp', async () =
   assert.equal(status, 201);
   assert.match(json.order.code, /^ASI-\d{6}-[A-Z2-9]{4}$/);
   assert.equal(json.order.subtotal, 114.7); // 2 × 39.90 + 34.90, ignorando el precio enviado
+  assert.equal(json.order.shipping, 10); // por debajo de S/ 120
+  assert.equal(json.order.total, 124.7);
   assert.equal(json.order.customer.email, 'ana@example.com');
   assert.equal(json.order.status, 'nuevo');
   assert.ok(json.whatsappUrl.startsWith('https://wa.me/51999888777?text='));
@@ -62,6 +68,15 @@ test('validación de pedidos', async () => {
   for (const [body, expected] of cases) assert.equal((await api('/api/orders', { method: 'POST', body })).status, expected, JSON.stringify(body));
   const pickup = await api('/api/orders', { method: 'POST', body: { ...validOrder(), delivery: { method: 'recojo' } } });
   assert.equal(pickup.status, 201);
+  assert.equal(pickup.json.order.shipping, 0);
+  const free = await api('/api/orders', { method: 'POST', body: validOrder([{ productId: 'maca', quantity: 3 }]) });
+  assert.equal(free.json.order.shipping, 10); // S/ 119.70: aún no llega a S/ 120
+  const free2 = await api('/api/orders', { method: 'POST', body: validOrder([{ productId: 'maca', quantity: 4 }]) });
+  assert.equal(free2.json.order.shipping, 0);
+  assert.ok(decodeURIComponent(free2.json.whatsappUrl).includes('Envío: gratis'));
+  const cfg = (await api('/api/config')).json;
+  assert.equal(cfg.freeShippingFrom, 120);
+  assert.equal(cfg.shippingFee, 10);
   const bad = await fetch(base + '/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{oops' });
   assert.equal(bad.status, 400);
 });
