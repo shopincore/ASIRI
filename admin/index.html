@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ASIRI · Administración</title>
+<style>
+  :root{--ink:#2d3c2e;--muted:#718071;--green:#405e43;--green-dark:#304b34;--line:#e8e9df;--bg:#f7f7f1;--card:#fffefa;--warn:#a8432f}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  h1,h2{font-family:Georgia,serif;font-weight:400;margin:0}
+  button,input,select,textarea{font:inherit;color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:16px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:6px 0 16px}
+  header h1{font-size:28px;letter-spacing:.06em}
+  header h1 small{font-family:system-ui,sans-serif;font-size:12px;letter-spacing:.14em;color:var(--muted);margin-left:8px}
+  nav{display:flex;gap:6px;flex-wrap:wrap}
+  .tab,.btn{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:8px 14px;cursor:pointer}
+  .tab[aria-selected=true],.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .btn.primary:hover{background:var(--green-dark)}
+  .btn:disabled{opacity:.6;cursor:progress}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px}
+  .muted{color:var(--muted);font-size:12px}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  input,select,textarea{border:1px solid #deded0;border-radius:6px;background:#fff;padding:8px 10px;min-width:0}
+  .login{max-width:380px;margin:12vh auto;display:flex;flex-direction:column;gap:12px}
+  .error{color:var(--warn);background:#fbefe9;border-radius:6px;padding:8px 12px}
+  .order-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+  .order-head strong{font-size:16px;letter-spacing:.03em}
+  .status{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;background:#eef2e8}
+  .status.nuevo{background:#fdf0d9}.status.cancelado{background:#f3e3df}.status.entregado{background:#dfeedd}
+  .order-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:10px}
+  ul{margin:0;padding-left:18px}
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .table th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .table input[type=number]{width:96px}
+  .table-wrap{overflow-x:auto}
+  .new-product{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+  .unread{border-left:3px solid var(--green)}
+  .empty{text-align:center;color:var(--muted);padding:30px}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form class="card login" id="login" hidden>
+    <h1>ASIRI</h1>
+    <p class="muted">Ingresa la clave de administración (ADMIN_TOKEN).</p>
+    <input type="password" id="token" autocomplete="current-password" required placeholder="Clave">
+    <p class="error" id="loginError" hidden></p>
+    <button class="btn primary" type="submit">Entrar</button>
+  </form>
+
+  <div id="app" hidden>
+    <header>
+      <h1>ASIRI <small>ADMINISTRACIÓN</small></h1>
+      <nav role="tablist">
+        <button class="tab" role="tab" data-tab="orders" aria-selected="true">Pedidos</button>
+        <button class="tab" role="tab" data-tab="products" aria-selected="false">Productos</button>
+        <button class="tab" role="tab" data-tab="messages" aria-selected="false">Mensajes</button>
+        <button class="tab" role="tab" data-tab="subscribers" aria-selected="false">Suscriptores</button>
+        <button class="btn" id="logout">Salir</button>
+      </nav>
+    </header>
+    <main id="view"></main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const API = window.ASIRI_API ?? (location.hostname.endsWith('github.io') ? 'https://asiri-production.up.railway.app' : '');
+const STATUSES = ['nuevo','confirmado','pagado','enviado','entregado','cancelado'];
+const $ = q => document.querySelector(q);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => 'S/ ' + Number(n).toFixed(2);
+const date = d => new Date(d).toLocaleString('es-PE', {dateStyle:'medium', timeStyle:'short'});
+let token = sessionStorage.getItem('asiri-admin') || '';
+let tab = 'orders', statusFilter = '';
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2500);}
+async function api(path, {method='GET', body}={}){
+  const res = await fetch(API + '/api/admin' + path, {method, headers:{Authorization:'Bearer '+token, ...(body && {'Content-Type':'application/json'})}, body: body && JSON.stringify(body)});
+  const data = await res.json().catch(()=>({}));
+  if(res.status === 401){logout('Clave incorrecta.'); throw new Error('No autorizado');}
+  if(!res.ok) throw new Error(data.error?.message || 'Error del servidor');
+  return data;
+}
+function logout(msg){token='';sessionStorage.removeItem('asiri-admin');$('#app').hidden=true;$('#login').hidden=false;const e=$('#loginError');e.hidden=!msg;e.textContent=msg||'';}
+
+$('#login').addEventListener('submit', async e => {
+  e.preventDefault(); token = $('#token').value.trim();
+  try{await api('/orders?limit=1'); sessionStorage.setItem('asiri-admin', token); start();}catch(err){if(token) logout(err.message);}
+});
+$('#logout').addEventListener('click', ()=>logout());
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {tab=b.dataset.tab;document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', String(t===b)));render();}));
+
+function start(){$('#login').hidden=true;$('#app').hidden=false;render();}
+async function render(){
+  const view = $('#view');
+  view.innerHTML = '<p class="empty">Cargando…</p>';
+  try{ view.innerHTML = await ({orders, products, messages, subscribers})[tab](); }
+  catch(err){ view.innerHTML = `<p class="error">${esc(err.message)}</p>`; }
+}
+
+async function orders(){
+  const {orders} = await api('/orders?limit=100' + (statusFilter ? '&status=' + statusFilter : ''));
+  const filter = `<div class="toolbar"><label>Estado <select id="statusFilter"><option value="">Todos</option>${STATUSES.map(s=>`<option ${s===statusFilter?'selected':''}>${s}</option>`).join('')}</select></label><button class="btn" data-action="refresh">Actualizar</button><span class="muted">${orders.length} pedido(s)</span></div>`;
+  if(!orders.length) return filter + '<p class="card empty">Aún no hay pedidos.</p>';
+  return filter + orders.map(o => `<article class="card">
+    <div class="order-head"><div><strong>${esc(o.code)}</strong> <span class="status ${esc(o.status)}">${esc(o.status)}</span><div class="muted">${date(o.createdAt)}</div></div>
+      <label class="muted">Cambiar estado <select data-order="${esc(o.code)}">${STATUSES.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></label></div>
+    <div class="order-grid">
+      <div><div class="muted">Cliente</div>${esc(o.customer.name)}<br><a href="https://wa.me/${esc(o.customer.phone.replace(/\D/g,''))}" target="_blank" rel="noopener">${esc(o.customer.phone)}</a>${o.customer.email?`<br>${esc(o.customer.email)}`:''}</div>
+      <div><div class="muted">Entrega</div>${o.delivery.method==='recojo'?'Recojo en tienda':`${esc(o.delivery.address)}<br>${esc(o.delivery.district)}`}${o.notes?`<div class="muted">Nota: ${esc(o.notes)}</div>`:''}</div>
+      <div><div class="muted">Productos</div><ul>${o.items.map(i=>`<li>${i.quantity} × ${esc(i.name)} — ${money(i.lineTotal)}</li>`).join('')}</ul><strong>Total ${money(o.subtotal)}</strong></div>
+    </div></article>`).join('');
+}
+
+async function products(){
+  const {products} = await api('/products');
+  return `<div class="card"><h2>Nuevo producto</h2><form class="new-product" id="newProduct" style="margin-top:10px">
+      <input name="id" placeholder="id (ej. te-verde)" required pattern="[a-z0-9-]+">
+      <input name="name" placeholder="Nombre" required>
+      <input name="category" placeholder="Categoría" required list="cats">
+      <input name="size" placeholder="Presentación (ej. Bolsa de 250 g)">
+      <input name="price" type="number" step="0.01" min="0" placeholder="Precio S/" required>
+      <input name="stock" type="number" min="0" placeholder="Stock (vacío = sin control)">
+      <input name="image" placeholder="Imagen (assets/…webp o URL)">
+      <input name="badge" placeholder="Etiqueta">
+      <textarea name="description" placeholder="Descripción" rows="1"></textarea>
+      <button class="btn primary" type="submit">Agregar</button>
+      <datalist id="cats">${[...new Set(products.map(p=>p.category))].map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    </form></div>
+    <div class="card table-wrap"><table class="table"><thead><tr><th>Producto</th><th>Categoría</th><th>Precio S/</th><th>Stock</th><th>Visible</th><th></th></tr></thead><tbody>
+    ${products.map(p=>`<tr data-id="${esc(p.id)}"><td><strong>${esc(p.name)}</strong><div class="muted">${esc(p.size)} · ${esc(p.id)}</div></td><td>${esc(p.category)}</td>
+      <td><input type="number" step="0.01" min="0" name="price" value="${(p.priceCents/100).toFixed(2)}"></td>
+      <td><input type="number" min="0" name="stock" value="${p.stock ?? ''}" placeholder="∞"></td>
+      <td><input type="checkbox" name="active" ${p.active?'checked':''}></td>
+      <td><button class="btn" data-action="save">Guardar</button></td></tr>`).join('')}
+    </tbody></table><p class="muted">Stock vacío = sin control de stock. Los pedidos descuentan stock y cancelar un pedido lo devuelve.</p></div>`;
+}
+
+async function messages(){
+  const {messages} = await api('/messages');
+  if(!messages.length) return '<p class="card empty">No hay mensajes.</p>';
+  return messages.map(m=>`<article class="card ${m.read?'':'unread'}"><div class="order-head"><div><strong>${esc(m.name)}</strong> · ${esc(m.contact)}<div class="muted">${date(m.createdAt)}</div></div>
+    <button class="btn" data-message="${m.id}" data-read="${!m.read}">${m.read?'Marcar como no leído':'Marcar como leído'}</button></div><p style="white-space:pre-wrap;margin:10px 0 0">${esc(m.message)}</p></article>`).join('');
+}
+
+async function subscribers(){
+  const {subscribers} = await api('/subscribers');
+  if(!subscribers.length) return '<p class="card empty">Aún no hay suscriptores.</p>';
+  return `<div class="toolbar"><span class="muted">${subscribers.length} suscriptor(es)</span><button class="btn" data-action="csv">Descargar CSV</button></div>
+    <div class="card table-wrap"><table class="table"><thead><tr><th>Correo</th><th>Fecha</th></tr></thead><tbody>${subscribers.map(s=>`<tr><td>${esc(s.email)}</td><td>${date(s.createdAt)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+$('#view').addEventListener('change', async e => {
+  if(e.target.id === 'statusFilter'){statusFilter = e.target.value; return render();}
+  const code = e.target.dataset.order;
+  if(code){
+    try{await api('/orders/' + encodeURIComponent(code), {method:'PATCH', body:{status:e.target.value}}); toast(`${code}: ${e.target.value}`); render();}
+    catch(err){toast(err.message); render();}
+  }
+});
+$('#view').addEventListener('click', async e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  if(btn.dataset.action === 'refresh') return render();
+  if(btn.dataset.action === 'save'){
+    const row = btn.closest('tr'), get = n => row.querySelector(`[name=${n}]`);
+    const stock = get('stock').value;
+    btn.disabled = true;
+    try{await api('/products/' + row.dataset.id, {method:'PATCH', body:{priceCents:Math.round(Number(get('price').value)*100), stock: stock==='' ? null : Number(stock), active:get('active').checked}}); toast('Producto guardado');}
+    catch(err){toast(err.message);} finally{btn.disabled = false;}
+  }
+  if(btn.dataset.message){
+    try{await api('/messages/' + btn.dataset.message, {method:'PATCH', body:{read: btn.dataset.read === 'true'}}); render();}catch(err){toast(err.message);}
+  }
+  if(btn.dataset.action === 'csv'){
+    const {subscribers} = await api('/subscribers');
+    const csv = 'email,fecha\n' + subscribers.map(s => `${s.email},${s.createdAt}`).join('\n');
+    const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download:'asiri-suscriptores.csv'});
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+});
+$('#view').addEventListener('submit', async e => {
+  if(e.target.id !== 'newProduct') return;
+  e.preventDefault();
+  const f = e.target.elements;
+  const body = {id:f.id.value.trim(), name:f.name.value, category:f.category.value, size:f.size.value, priceCents:Math.round(Number(f.price.value)*100), image:f.image.value, badge:f.badge.value, description:f.description.value};
+  if(f.stock.value !== '') body.stock = Number(f.stock.value);
+  try{await api('/products', {method:'POST', body}); toast('Producto agregado'); render();}catch(err){toast(err.message);}
+});
+
+token ? start() : logout();
+</script>
+</body>
+</html>
